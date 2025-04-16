@@ -4,11 +4,6 @@ ARG PORT=8050
 
 WORKDIR /app
 
-# Install system dependencies (including curl)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install uv
 RUN pip install uv
 

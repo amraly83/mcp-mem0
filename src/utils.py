@@ -25,7 +25,7 @@ def get_mem0_client():
     config = {}
     
     # Configure LLM based on provider
-    if llm_provider == 'openai' or llm_provider == 'mistral':
+    if llm_provider == 'openai' or llm_provider == 'openrouter':
         config["llm"] = {
             "provider": "openai",
             "config": {
@@ -39,9 +39,9 @@ def get_mem0_client():
         if llm_api_key and not os.environ.get("OPENAI_API_KEY"):
             os.environ["OPENAI_API_KEY"] = llm_api_key
             
-        # For Mistral, set the specific API key
+        # For Openrouter, set the specific API key
         if llm_provider == 'mistral' and llm_api_key:
-            os.environ["MISTRAL_API_KEY"] = llm_api_key
+            os.environ["OPENROUTER_API_KEY"] = llm_api_key
     
     elif llm_provider == 'ollama':
         config["llm"] = {
@@ -63,8 +63,8 @@ def get_mem0_client():
         config["embedder"] = {
             "provider": "openai",
             "config": {
-                "model": embedding_model or "text-embedding-3-small",
-                "embedding_dims": 1536  # Default for text-embedding-3-small
+                "model": embedding_model or "mistral-embed",
+                "embedding_dims": 1024  # Default for text-embedding-3-small
             }
         }
         
@@ -72,7 +72,7 @@ def get_mem0_client():
         if llm_api_key and not os.environ.get("OPENAI_API_KEY"):
             os.environ["OPENAI_API_KEY"] = llm_api_key
     
-    elif llm_provider == 'mistral':
+    elif llm_provider == 'ollama':
         config["embedder"] = {
             "provider": "mistral",
             "config": {
@@ -92,7 +92,7 @@ def get_mem0_client():
         "config": {
             "connection_string": os.environ.get('DATABASE_URL', ''),
             "collection_name": "mem0_memories",
-            "embedding_model_dims": 1024 if llm_provider == "openai" else 768
+            "embedding_model_dims": 1024 if llm_provider == "openai" else 1024
         }
     }
 

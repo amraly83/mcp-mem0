@@ -128,13 +128,14 @@ def get_mem0_client():
         if embedding_base_url:
             config["embedder"]["config"]["ollama_base_url"] = embedding_base_url
             
-    # Configure Supabase vector store
+    # Configure Supabase vector store with error handling for dimension mismatches
     config["vector_store"] = {
         "provider": "supabase",
         "config": {
             "connection_string": os.environ.get('DATABASE_URL', ''),
             "collection_name": "mem0_memories",
-            "embedding_model_dims": embedding_dims # Use dynamically determined dimensions
+            "embedding_model_dims": embedding_dims,
+            "recreate_collection": True  # Force recreation if dimensions mismatch
         }
     }
 

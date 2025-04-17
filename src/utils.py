@@ -57,28 +57,29 @@ def get_mem0_client():
         llm_base_url = os.getenv('LLM_BASE_URL')
         if llm_base_url:
             config["llm"]["config"]["ollama_base_url"] = llm_base_url
-    # Configure embedder based on provider
-if llm_provider == 'openai' or llm_provider == 'openrouter':
-    # Determine embedding dimensions based on provider and model
-    if llm_provider == 'openrouter':
-        embedding_dims = 1024  # Set your desired dimension for OpenRouter here
-    else:  # OpenAI
-        embedding_dims = 1536  # Default for text-embedding-3-small
-
-    config["embedder"] = {
-        "provider": "openai" if llm_provider == 'openai' else "openrouter",
-        "config": {
-            "model": embedding_model or ("text-embedding-3-small" if llm_provider == 'openai' else "mistral-embed"),
-            "embedding_dims": embedding_dims
-        }
-    }
     
-    # Set API key in environment if not already set
-    if llm_api_key:
-        if llm_provider == 'openai' and not os.environ.get("OPENAI_API_KEY"):
-            os.environ["OPENAI_API_KEY"] = llm_api_key
-        elif llm_provider == 'openrouter' and not os.environ.get("OPENROUTER_API_KEY"):
-            os.environ["OPENROUTER_API_KEY"] = llm_api_key
+    # Configure embedder based on provider
+    if llm_provider == 'openai' or llm_provider == 'openrouter':
+        # Determine embedding dimensions based on provider and model
+        if llm_provider == 'openrouter':
+            embedding_dims = 1024  # Set your desired dimension for OpenRouter here
+        else:  # OpenAI
+            embedding_dims = 1536  # Default for text-embedding-3-small
+
+        config["embedder"] = {
+            "provider": "openai" if llm_provider == 'openai' else "openrouter",
+            "config": {
+                "model": embedding_model or ("text-embedding-3-small" if llm_provider == 'openai' else "mistral-embed"),
+                "embedding_dims": embedding_dims
+            }
+        }
+        
+        # Set API key in environment if not already set
+        if llm_api_key:
+            if llm_provider == 'openai' and not os.environ.get("OPENAI_API_KEY"):
+                os.environ["OPENAI_API_KEY"] = llm_api_key
+            elif llm_provider == 'openrouter' and not os.environ.get("OPENROUTER_API_KEY"):
+                os.environ["OPENROUTER_API_KEY"] = llm_api_key
     
     elif llm_provider == 'ollama':
         config["embedder"] = {
@@ -95,15 +96,14 @@ if llm_provider == 'openai' or llm_provider == 'openrouter':
             config["embedder"]["config"]["ollama_base_url"] = embedding_base_url
     
     # Configure Supabase vector store
-# Configure Supabase vector store
-config["vector_store"] = {
-    "provider": "supabase",
-    "config": {
-        "connection_string": os.environ.get('DATABASE_URL', ''),
-        "collection_name": "mem0_memories",
-        "embedding_model_dims": embedding_dims if 'embedding_dims' in locals() else (1536 if llm_provider == "openai" else 1024)  # Use the dimensions we set earlier
+    config["vector_store"] = {
+        "provider": "supabase",
+        "config": {
+            "connection_string": os.environ.get('DATABASE_URL', ''),
+            "collection_name": "mem0_memories",
+            "embedding_model_dims": embedding_dims if 'embedding_dims' in locals() else (1536 if llm_provider == "openai" else 1024)  # Use the dimensions we set earlier
+        }
     }
-}
 
     # config["custom_fact_extraction_prompt"] = CUSTOM_INSTRUCTIONS
     

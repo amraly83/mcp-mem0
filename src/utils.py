@@ -128,14 +128,15 @@ def get_mem0_client():
         if embedding_base_url:
             config["embedder"]["config"]["ollama_base_url"] = embedding_base_url
             
-    # Configure Supabase vector store with error handling for dimension mismatches
+    # Configure Supabase vector store
     config["vector_store"] = {
         "provider": "supabase",
         "config": {
             "connection_string": os.environ.get('DATABASE_URL', ''),
             "collection_name": "mem0_memories",
             "embedding_model_dims": embedding_dims,
-            "recreate_collection": True  # Force recreation if dimensions mismatch
+            "index_measure": "cosine",  # Standard similarity measure
+            "index_method": "hnsw"      # Default indexing method
         }
     }
 

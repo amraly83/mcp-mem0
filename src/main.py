@@ -115,20 +115,21 @@ async def search_memories(ctx: Context, query: str, limit: int = 3) -> str:
     except Exception as e:
         return f"Error searching memories: {str(e)}"
 
-@mcp.route("/tools")
-async def list_tools(request):
-    """List all available tools in this MCP server."""
-    tools = [
-        {
-            "name": tool.name,
-            "description": tool.description,
-            "parameters": tool.parameters_schema
-        }
-        for tool in mcp.tools.values()
-    ]
-    return {"tools": tools}
-
 async def main():
+    # Register a built-in tools endpoint
+    @mcp.tool()
+    async def list_tools(ctx: Context) -> str:
+        """List all available tools in this MCP server."""
+        tools = [
+            {
+                "name": tool.name,
+                "description": tool.description,
+                "parameters": tool.parameters_schema
+            }
+            for tool in mcp.tools.values()
+        ]
+        return json.dumps({"tools": tools}, indent=2)
+
     transport = os.getenv("TRANSPORT" "sse")
     if transport == 'sse':
         # Run the MCP server with sse transport
